@@ -1,18 +1,14 @@
-
----
-
 [//]: # (Image References)
 
-[image1]: ./examples/visualization.jpg "Visualization"
-[image2]: ./examples/grayscale.jpg "Grayscaling"
-[image3]: ./examples/random_noise.jpg "Random Noise"
-[image4]: ./examples/fahrrad_fussgaengerweg.jpg "cycle and pedastrian path sign"
-[image5]: ./examples/give_way.jpeg "yield Sign"
-[image6]: ./examples/halte_verbot.jpg "No stopping sign"
-[image7]: ./examples/speed_limit70.jpg "Speed limit 70 Sign 4"
-[image8]: ./examples/stop.jpg "Stop Sign 5"
+[image1]: ./img/train_distribution.PNG "Training distribution"
+[image2]: ./img/sign_original.png "Original traffic sign image"
+[image3]: ./img/sign_norm_aug.png "Normalized and Augmented image"
+[image4]: ./new-signs/fahrrad_fussgaengerweg.jpg "cycle and pedastrian path sign"
+[image5]: ./new-signs/give_way.jpeg "yield Sign"
+[image6]: ./new-signs/halte_verbot.jpg "No stopping sign"
+[image7]: ./new-signs/speed_limit70.jpg "Speed limit 70 Sign 4"
+[image8]: ./new-signs/stop.jpg "Stop Sign 5"
 
----
 # Traffic Sign Classification with Deep Neural Networks
 ## Aim
 
@@ -41,7 +37,8 @@ As mentioned above, the data set was provided by udacity in pickle files and usi
 To get an understanding for the dataset I looked at a sample of images from the dataset. I noticed that, in the unshuffled dataset subsequent images show a series of the same traffic sign extracted from videos. The images show the road signs fairly well centered and zoomed in on the road sign. This means that the scope of this project is limited to classification only. The first step prior to the classification, identifying the traffic sign object in the, not just proverbial, bigger picture, has already been taken care of. 
 For better characterization of the dataset the distribution of samples per class (traffic sign) were plotted in a bar chart depicted below.
 
-![alt text][image1]
+![Training Distribution][image1]
+
 The bar chart shows that the distribution of samples per class is very uneven. It ranges from 180 images for sign 0 (Speed limit 20km/h),  19 (Dangerous curve to the left), 37 (Go straight or left) to 2010 images of the 50 km/h speed limit sign with many.
 
 ## Design and Test a Model Architecture
@@ -56,7 +53,8 @@ To increase the performance further after establishing my own network architectu
 To balance the dataset data augmentation could have applied selectively but the assumption was made that the validation and testing dataset possessed a distribution simliar to the training set. It could as well be argued that the MNST dataset represents the distribution of traffic signs realistically and does hence not need to be adjusted. Henceforth all data augmentation was applied uniform. In a road sign classifier deployed in a self driving car the classifier could be optimized so that signs that have the most dangerous consequences when not classified correctly get augmented more than other classes. However this was not a goal laid out for this project.
 This resulted in a training set of 313191 (nine times the size of the initial training set). Here is an example of a normalized and augmented image.
 
-![alt text][image2]
+![Original traffic sign][image2]
+![Normalized and augmented traffic sign][image3]
 
 ### 3. Neural Network Architecture
 After first steps with LeNet and reaching about 95% Validation accuracy with preprocessing I ventured off to build my own network inspired by the VGG architecture (https://arxiv.org/pdf/1409.1556.pdf). I chose the VGG architecture because it was highlighted in the lectures how variable it is and often serves well as a starting point for image classification problems. Since traffic sign classification is a special case of image classification it was thought to be well suited for this problem.
@@ -87,7 +85,6 @@ The final model is described below.
 | Fully connected		| 43 nodes										|
 
 
-
 ### 4. Training the network
 The model was trained for 130 epochs with a batch size of 256 and a learning rate of 0.001. The learning rate was taken as a starting point from the LeNet lab. 0.0001 was tested as well but was found to extend training time by a lot. The number of epochs was determined by training the network until the validation accuracy did no longer improve. This was used to avoid overfitting and cut training time. The batch size of 256 was chosen because it allowed a high GPU facilitation and improved training time.
 The Adam optimizer was used as it was said to be a good overall choice in the udacity course material as well as in this more exhaustive comparison (http://sebastianruder.com/optimizing-gradient-descent/index.html#whichoptimizertochoose).
@@ -101,19 +98,22 @@ Overall the final outcome of ~98% validation accuracy and 97% test accuracy are 
 
 ## Testing the Model on New Images
 
-To test the model on completely new images of traffic signs I downloaded five images from the web found through the google image search. Images that were not included in the 43 classes of the dataset were included as well to see how the model does on unknown images. The images below were then resized, disregarding the original aspect ratio, to 32x32 pixel to comply with network input layer. This resulted in varying degrees of distortion.
+To test the model on completely new images of traffic signs I downloaded five images from the web found through the google image search. Images that were not included in the 43 classes of the dataset were included as well to see how the model does on unknown images. The images below were then resized, disregarding the original aspect ratio, to 32x32 pixel to comply with network input layer. This resulted in varying degrees of distortion. Further complication may be cause by the watermarks some of the images have.
 
-![alt text][image4] ![alt text][image5] ![alt text][image6] 
-![alt text][image7] ![alt text][image8]
+![Pedastrian/bike way][image4] 
+![Yield][image5] 
+![No stopping][image6] 
+![Speed limit 70km/h][image7]
+![Stop][image8]
 
-The first and third image are challenging because they are not on the list and show two signs each. The second sign could be a bit tricky because it differs from a square and will get distorted during resizing. The stop and 70km/h speed limit should be easy to classify.
+The first and third image are expected to be challenging because they are not on the list and show two signs each. The second sign could be a bit tricky because it differs from a square and will get distorted during resizing. The stop and 70km/h speed limit should be easy to classify.
 
 | Image			        |     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | pedastrian/bike way	| Speed limit 30 km/h   						| 
 | Yield     			| Yield 										|
 | No stopping			| Priority Road									|
-| Speed limited 70km/h	| General Caution								|
+| Speed limit 70km/h	| General Caution								|
 | Stop					| Stop			      							|
 
 The model correctly predicted the stop and yield sign. That is two out of five equating 40% accuracy. It was not expected to classify the pedastrian/bike way and the no stopping sign as they are not contained in the set of classes. The 70km/h speed limit sign however was expected to be classified correctly. This shows significant underperforming compared to the validation and test accuracy on the MNST dataset but is expected due to two traffic signs which are not covered by the MNST data set.
